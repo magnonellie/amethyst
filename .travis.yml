@@ -50,7 +50,7 @@ before_script:
   - export PATH=$PATH:/home/travis/.cargo/bin
 
 # Generate documentation, compile the engine, run tests.
-script: bash travis.sh
+script: bash .ci.sh
 
 # Push notifications to `amethyst/general` and `amethyst/engine` Gitter chats.
 notifications:

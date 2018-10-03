@@ -1,0 +1,59 @@
+kind: pipeline
+name: default
+
+workspace:
+  base: /amethyst
+  path: src
+
+trigger:
+  branch:
+  - staging
+  - trying
+  - master
+  event:
+  - pull_request
+  - tag
+
+steps:
+- name: restore-cache
+  image: drillster/drone-volume-cache
+  restore: true
+  mount: [".cargo"]
+  volumes: ["/tmp/cache:/cache"]
+
+- name: test
+  image: rustdocker/rust:${RUST_VERSION}
+  environment:
+  - MDBOOK_RELEASE="v0.2.1/mdbook-v0.2.1-x86_64-unknown-linux-gnu.tar.gz"
+  - CARGO_HOME="/amethyst/.cargo"
+  commands:
+  - sudo apt-get install -y libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev
+
+  - echo "Build and test without profiler"
+  - cargo test --all -v || exit 1
+
+  - echo "Install mdbook"
+  - curl -L -o mdbook.tar.gz https://github.com/rust-lang-nursery/mdBook/releases/download/${MDBOOK_RELEASE}
+  - tar -xvf mdbook.tar.gz -C ./
+  - rm mdbook.tar.gz
+
+  - echo "Build all the examples in the book"
+  - ./mdbook test book -L target/debug/deps || exit 2
+
+  - echo "Build and test with profiler"
+  - cargo test --all --features profiler -v || exit 3
+
+  - echo "Build and test with sdl_controller"
+  - cargo test --all --features sdl_controller -v || exit 4
+
+- name: rebuild-cache
+  image: drillster/drone-volume-cache
+  rebuild: true
+  mount: [".cargo"]
+  volumes: ["/tmp/cache:/cache"]
+
+matrix:
+  RUST_VERSION:
+  - stable
+  - beta
+  - nightly
