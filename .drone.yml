@@ -14,6 +14,12 @@ trigger:
   - pull_request
   - tag
 
+matrix:
+  RUST_VERSION:
+  - stable
+  - beta
+  - nightly
+
 steps:
 - name: restore-cache
   image: drillster/drone-volume-cache
@@ -51,9 +57,3 @@ steps:
   rebuild: true
   mount: [".cargo"]
   volumes: ["/tmp/cache:/cache"]
-
-matrix:
-  RUST_VERSION:
-  - stable
-  - beta
-  - nightly
