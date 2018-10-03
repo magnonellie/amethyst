@@ -24,8 +24,10 @@ steps:
 - name: restore-cache
   image: drillster/drone-volume-cache
   restore: true
-  mount: [".cargo"]
-  volumes: ["/tmp/cache:/cache"]
+  mount:
+  - .cargo
+  volumes:
+  - /tmp/cache:/cache
 
 - name: test
   image: rustdocker/rust:${RUST_VERSION}
@@ -55,5 +57,7 @@ steps:
 - name: rebuild-cache
   image: drillster/drone-volume-cache
   rebuild: true
-  mount: [".cargo"]
-  volumes: ["/tmp/cache:/cache"]
+  mount:
+  - .cargo
+  volumes:
+  - /tmp/cache:/cache
