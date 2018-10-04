@@ -25,19 +25,19 @@ name: default
 #  - nightly
 
 steps:
-- name: restore-cache
-  image: drillster/drone-volume-cache
-  restore: true
-  mount:
-  - ".cargo"
-  volumes:
-  - "/tmp/cache:/cache"
+#- name: restore-cache
+#  image: drillster/drone-volume-cache
+#  restore: true
+#  mount:
+#  - ".cargo"
+#  volumes:
+#  - "/tmp/cache:/cache"
 
 - name: test
   image: rustdocker/rust:${RUST_VERSION}
   environment:
-  - "MDBOOK_RELEASE='v0.2.1/mdbook-v0.2.1-x86_64-unknown-linux-gnu.tar.gz'"
-  - "CARGO_HOME='/amethyst/.cargo'"
+  - MDBOOK_RELEASE=v0.2.1/mdbook-v0.2.1-x86_64-unknown-linux-gnu.tar.gz
+  - CARGO_HOME=/amethyst/.cargo
   commands:
   - "sudo apt-get install -y libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev"
 
@@ -58,10 +58,10 @@ steps:
   - "echo 'Build and test with sdl_controller'"
   - "cargo test --all --features sdl_controller -v || exit 4"
 
-- name: rebuild-cache
-  image: drillster/drone-volume-cache
-  rebuild: true
-  mount:
-  - ".cargo"
-  volumes:
-  - "/tmp/cache:/cache"
+#- name: rebuild-cache
+#  image: drillster/drone-volume-cache
+#  rebuild: true
+#  mount:
+#  - ".cargo"
+#  volumes:
+#  - "/tmp/cache:/cache"
