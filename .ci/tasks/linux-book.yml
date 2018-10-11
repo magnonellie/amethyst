@@ -19,6 +19,7 @@ run:
   args:
   - -exc
   - |
+    apt-get update
     apt-get install -y libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev
     export PATH="$HOME/.cargo/bin:$PATH"
     cargo install mdbook --vers "((MDBOOK_RELEASE))"
