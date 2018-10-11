@@ -1,0 +1,22 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: rustdocker/rust
+    tag: stable
+
+inputs:
+- name: amethyst
+
+run:
+  path: sh
+  dir: amethyst
+  args:
+  - -exc
+  - |
+    cargo test --all -v
+    cargo test --all --features profiler -v
+    cargo test --all --features sdl_controller -v
+

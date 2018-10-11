@@ -1,0 +1,44 @@
+---
+resources:
+- name: amethyst
+  type: git
+  source:
+    uri: https://github.com/magnonellie/amethyst
+    branch: ((branch))
+
+- name: stable-rust
+  type: docker-image
+  source: { repository: rustdocker/rust, tag: stable }
+- name: beta-rust
+  type: docker-image
+  source: { repository: rustdocker/rust, tag: beta }
+- name: nightly-rust
+  type: docker-image
+  source: { repository: rustdocker/rust, tag: nightly }
+
+jobs:
+- name: tests
+  plan:
+  - get: amethyst
+    trigger: true
+  - get: stable-rust
+  - get: beta-rust
+  - get: nightly-rust
+  - aggregate:
+    - task: book
+      file: .ci/tasks/linux-book.yml
+
+    - task: stable
+      image: stable-rust
+      file: .ci/tasks/linux-test.yml
+
+    - task: beta
+      image: beta-rust
+      file: .ci/tasks/linux-test.yml
+
+    - try:
+        task: nightly
+        image: nightly-rust
+        file: amethyst/.ci/tasks/linux-test.yml
+
+
