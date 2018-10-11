@@ -16,6 +16,8 @@ run:
   args:
   - -exc
   - |
+    pwd
+    env
     cargo test --all -v
     cargo test --all --features profiler -v
     cargo test --all --features sdl_controller -v
