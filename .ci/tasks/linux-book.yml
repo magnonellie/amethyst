@@ -20,7 +20,8 @@ run:
   - -exc
   - |
     apt-get update
-    apt-get install -y libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev
+    apt-get install -y \
+      libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev python3
     export PATH="$HOME/.cargo/bin:$PATH"
-    cargo install mdbook --vers "((MDBOOK_RELEASE))"
+    cargo install mdbook --vers "$MDBOOK_RELEASE"
     mdbook test book -L target/debug/deps
