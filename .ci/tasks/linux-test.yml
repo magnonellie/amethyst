@@ -16,7 +16,7 @@ run:
   args:
   - -exc
   - |
-    pwd
+    export PATH="$HOME/.cargo/bin:$PATH"
     env
     cargo test --all -v
     cargo test --all --features profiler -v
