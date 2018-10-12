@@ -33,28 +33,28 @@ jobs:
   - get: amethyst
     trigger: true
   - put: commit-status
-    params: { state: pending, commit: amethyst/.git/ref }
+    params: { state: pending, commit: amethyst }
   - task: tests
     file: amethyst/.ci/tasks/linux-test.yml
   - task: book
     file: amethyst/.ci/tasks/linux-book.yml
   on_failure:
     put: commit-status
-    params: { state: failure, commit: amethyst/.git/ref }
+    params: { state: failure, commit: amethyst }
 
 - name: linux-rust-beta
   plan:
   - get: amethyst
     trigger: true
   - put: commit-status
-    params: { state: pending, commit: amethyst/.git/ref }
+    params: { state: pending, commit: amethyst }
   - get: beta-rust
   - task: tests
     image: beta-rust
     file: amethyst/.ci/tasks/linux-test.yml
   on_failure:
     put: commit-status
-    params: { state: failure, commit: amethyst/.git/ref }
+    params: { state: failure, commit: amethyst }
 
 - name: linux-rust-nightly
   plan:
@@ -72,25 +72,25 @@ jobs:
   - get: amethyst
     trigger: true
   - put: commit-status
-    params: { state: pending, commit: amethyst/.git/ref }
+    params: { state: pending, commit: amethyst }
   - task: tests
     file: amethyst/.ci/tasks/windows-test.yml
   on_failure:
     put: commit-status
-    params: { state: failure, commit: amethyst/.git/ref }
+    params: { state: failure, commit: amethyst }
 
 - name: windows-rust-beta
   plan:
   - get: amethyst
     trigger: true
   - put: commit-status
-    params: { state: pending, commit: amethyst/.git/ref }
+    params: { state: pending, commit: amethyst }
   - task: tests
     file: amethyst/.ci/tasks/windows-test.yml
     params: { RUST_CHANNEL: beta }
   on_failure:
     put: commit-status
-    params: { state: failure, commit: amethyst/.git/ref }
+    params: { state: failure, commit: amethyst }
 
 - name: windows-rust-nightly
   plan:
@@ -108,4 +108,4 @@ jobs:
     passed: [linux-rust-stable, linux-rust-beta, windows-rust-stable, windows-rust-beta]
     trigger: true
   - put: commit-status
-    params: { state: success, commit: amethyst/.git/ref }
+    params: { state: success, commit: amethyst }
