@@ -25,3 +25,6 @@ run:
     cargo +%RUST_CHANNEL% test --all &&
     cargo +%RUST_CHANNEL% test --all --features profiler &&
     cargo +%RUST_CHANNEL% test --all --features sdl_controller
+
+caches:
+- path: target
