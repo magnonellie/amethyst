@@ -21,9 +21,10 @@ jobs:
   plan:
   - get: amethyst
     trigger: true
-  - get: stable-rust
-  - get: beta-rust
-  - get: nightly-rust
+  - aggregate:
+    - get: stable-rust
+    - get: beta-rust
+    - get: nightly-rust
   - aggregate:
 #    - task: book
 #      file: amethyst/.ci/tasks/linux-book.yml

@@ -19,7 +19,7 @@ run:
     apt-get update
     apt-get install -y \
       libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev python3 build-essential
-      cmake
+      cmake libsdl2-dev
     export PATH="$HOME/.cargo/bin:$PATH"
     cargo test --all -v
     cargo test --all --features profiler -v
