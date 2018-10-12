@@ -15,7 +15,7 @@ resources:
 - name: commit-status
   type: github-status
   source:
-    repository: https://github.com/magnonellie/amethyst
+    repository: magnonellie/amethyst
     access_token: ((repo_github_token))
     branch: ((branch))
 
