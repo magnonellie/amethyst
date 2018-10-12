@@ -25,20 +25,20 @@ jobs:
   - get: beta-rust
   - get: nightly-rust
   - aggregate:
-    - task: book
-      file: amethyst/.ci/tasks/linux-book.yml
+#    - task: book
+#      file: amethyst/.ci/tasks/linux-book.yml
 
     - task: stable
       image: stable-rust
       file: amethyst/.ci/tasks/linux-test.yml
 
-    - task: beta
-      image: beta-rust
-      file: amethyst/.ci/tasks/linux-test.yml
-
-    - try:
-        task: nightly
-        image: nightly-rust
-        file: amethyst/.ci/tasks/linux-test.yml
+#    - task: beta
+#      image: beta-rust
+#      file: amethyst/.ci/tasks/linux-test.yml
+#
+#    - try:
+#        task: nightly
+#        image: nightly-rust
+#        file: amethyst/.ci/tasks/linux-test.yml
 
 
