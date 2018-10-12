@@ -5,10 +5,13 @@ resources:
   source:
     uri: https://github.com/magnonellie/amethyst
     branch: ((branch))
+- name: commit-status
+  type: github-status
+  source:
+    repository: https://github.com/magnonellie/amethyst
+    access_token: ((repo_github_token))
+    branch: ((branch))
 
-- name: stable-rust
-  type: docker-image
-  source: { repository: rustdocker/rust, tag: stable }
 - name: beta-rust
   type: docker-image
   source: { repository: rustdocker/rust, tag: beta }
@@ -17,29 +20,86 @@ resources:
   source: { repository: rustdocker/rust, tag: nightly }
 
 jobs:
-- name: tests
+# Linux jobs
+- name: linux-rust-stable
   plan:
   - get: amethyst
     trigger: true
-  - aggregate:
-    - get: stable-rust
-    - get: beta-rust
-    - get: nightly-rust
-  - aggregate:
-#    - task: book
-#      file: amethyst/.ci/tasks/linux-book.yml
+  - put: commit-status
+    params: { state: "pending", commit: "repo" }
+  - task: tests
+    file: amethyst/.ci/tasks/linux-test.yml
+  - task: book
+    file: amethyst/.ci/tasks/linux-book.yml
+  on_failure:
+    put: commit-status
+    params: { state: "failure", commit: "repo" }
 
-    - task: stable
-      image: stable-rust
+- name: linux-rust-beta
+  plan:
+  - get: amethyst
+    trigger: true
+  - put: commit-status
+    params: { state: "pending", commit: "repo" }
+  - get: beta-rust
+  - task: tests
+    image: beta-rust
+    file: amethyst/.ci/tasks/linux-test.yml
+  on_failure:
+    put: commit-status
+    params: { state: "failure", commit: "repo" }
+
+- name: linux-rust-nightly
+  plan:
+  - get: amethyst
+    trigger: true
+  - get: nightly-rust
+  - try:
+      task: tests
+      image: nightly-rust
       file: amethyst/.ci/tasks/linux-test.yml
 
-#    - task: beta
-#      image: beta-rust
-#      file: amethyst/.ci/tasks/linux-test.yml
-#
-#    - try:
-#        task: nightly
-#        image: nightly-rust
-#        file: amethyst/.ci/tasks/linux-test.yml
+# Windows jobs
+- name: windows-rust-stable
+  plan:
+  - get: amethyst
+    trigger: true
+  - put: commit-status
+    params: { state: "pending", commit: "repo" }
+  - task: tests
+    file: amethyst/.ci/tasks/windows-test.yml
+  on_failure:
+    put: commit-status
+    params: { state: "failure", commit: "repo" }
 
+- name: windows-rust-beta
+  plan:
+  - get: amethyst
+    trigger: true
+  - put: commit-status
+    params: { state: "pending", commit: "repo" }
+  - task: tests
+    file: amethyst/.ci/tasks/windows-test.yml
+    params: { RUST_CHANNEL: beta }
+  on_failure:
+    put: commit-status
+    params: { state: "failure", commit: "repo" }
 
+- name: windows-rust-nightly
+  plan:
+  - get: amethyst
+    trigger: true
+  - try:
+      task: tests
+      image: nightly-rust
+      file: amethyst/.ci/tasks/windows-test.yml
+      params: { RUST_CHANNEL: nightly }
+
+# Approve the commit so that bors is happy :D
+- name: approve-commit
+  plan:
+  - get: amethyst
+    passed: [linux-rust-stable, linux-rust-beta, windows-rust-stable, windows-rust-beta]
+    trigger: true
+  - put: commit-status
+    params: { state: "success", commit: "repo" }
