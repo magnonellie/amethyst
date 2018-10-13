@@ -1,0 +1,145 @@
+---
+resource_types:
+# The only requirement bors has for testing stuff is that the commit gets marked with its build status. That's what this
+# resource type accomplishes.
+- name: github-status
+  type: docker-image
+  source:
+    repository: dpb587/github-status-resource
+    tag: master
+
+resources:
+- name: amethyst
+  type: git
+  source:
+    uri: https://github.com/magnonellie/amethyst
+    branch: ((branch))
+
+- name: linux-stable-status
+  type: github-status
+  source:
+    repository: magnonellie/amethyst
+    access_token: ((repo_github_token))
+    branch: ((branch))
+    context: linux-rust-stable
+
+- name: linux-beta-status
+  type: github-status
+  source:
+    repository: magnonellie/amethyst
+    access_token: ((repo_github_token))
+    branch: ((branch))
+    context: linux-rust-stable
+
+- name: windows-stable-status
+  type: github-status
+  source:
+    repository: magnonellie/amethyst
+    access_token: ((repo_github_token))
+    branch: ((branch))
+    context: windows-rust-stable
+
+- name: windows-beta-status
+  type: github-status
+  source:
+    repository: magnonellie/amethyst
+    access_token: ((repo_github_token))
+    branch: ((branch))
+    context: windows-rust-beta
+
+# Stable Rust is used by default, so no need to have it as a resource.
+- name: beta-rust
+  type: docker-image
+  source: { repository: rustdocker/rust, tag: beta }
+- name: nightly-rust
+  type: docker-image
+  source: { repository: rustdocker/rust, tag: nightly }
+
+jobs:
+# Linux jobs
+- name: linux-rust-stable
+  plan:
+  # Fetch Amethyst from ((branch)) when a new commit is available.
+  - get: amethyst
+    trigger: true
+  # Assign the commit a status of pending.
+  - put: linux-stable-status
+    params: { state: pending, commit: amethyst }
+  # Run the unit tests (gets an output for the target directory).
+  - task: tests
+    file: amethyst/.ci/tasks/linux-test.yml
+  # Test snippets from the book (takes an input of a target directory).
+  - task: book
+    file: amethyst/.ci/tasks/linux-book.yml
+  # Assign the commit a status of success
+  - put: linux-stable-status
+    params: { state: success, commit: amethyst }
+  on_failure:
+    # If the build failed, set the build status to failed.
+    put: linux-stable-status
+    params: { state: failure, commit: amethyst }
+
+- name: linux-rust-beta
+  plan:
+  - get: amethyst
+    trigger: true
+  - put: linux-beta-status
+    params: { state: pending, commit: amethyst }
+  - get: beta-rust
+  - task: tests
+    image: beta-rust
+    file: amethyst/.ci/tasks/linux-test.yml
+  - put: linux-beta-status
+    params: { state: success, commit: amethyst }
+  on_failure:
+    put: linux-beta-status
+    params: { state: failure, commit: amethyst }
+
+- name: linux-rust-nightly
+  plan:
+  - get: amethyst
+    trigger: true
+  - get: nightly-rust
+  - try:
+      task: tests
+      image: nightly-rust
+      file: amethyst/.ci/tasks/linux-test.yml
+
+# Windows jobs
+- name: windows-rust-stable
+  plan:
+  - get: amethyst
+    trigger: true
+  - put: windows-stable-status
+    params: { state: pending, commit: amethyst }
+  - task: tests
+    file: amethyst/.ci/tasks/windows-test.yml
+  - put: windows-stable-status
+    params: { state: success, commit: amethyst }
+  on_failure:
+    put: windows-stable-status
+    params: { state: failure, commit: amethyst }
+
+- name: windows-rust-beta
+  plan:
+  - get: amethyst
+    trigger: true
+  - put: windows-beta-status
+    params: { state: pending, commit: amethyst }
+  - task: tests
+    file: amethyst/.ci/tasks/windows-test.yml
+    params: { RUST_CHANNEL: beta }
+  - put: windows-beta-status
+    params: { state: success, commit: amethyst }
+  on_failure:
+    put: windows-beta-status
+    params: { state: failure, commit: amethyst }
+
+- name: windows-rust-nightly
+  plan:
+  - get: amethyst
+    trigger: true
+  - try:
+      task: tests
+      file: amethyst/.ci/tasks/windows-test.yml
+      params: { RUST_CHANNEL: nightly }

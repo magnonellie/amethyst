@@ -1,0 +1,17 @@
+---
+platform: windows
+
+params:
+  RUST_CHANNEL: stable
+  RUST_TARGET: x86_64-pc-windows-msvc
+
+inputs:
+- name: amethyst
+
+run:
+  path: .ci/tasks/windows-test.bat
+  dir: amethyst
+
+
+caches:
+- path: target
