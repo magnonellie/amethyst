@@ -24,13 +24,10 @@ Amethyst is a game engine aiming to be fast and as configurable as possible.
 
 These principles are what make amethyst unique and competitive in the world of game engines.
 
-* Massively parallel architecture.
-* Powered by a correct [Entity Component System][ecs] model.
-* Rapid prototyping with [RON][ron] files for prefabs and an abstract scripting API.
-* Strong focus on encouraging reusability and clean interfaces.
+* It's a bad [Godot][go] clone
 
 [ecs]: https://en.wikipedia.org/wiki/Entity–component–system
-[ron]: https://github.com/ron-rs/ron
+[go]: https://godotengine.org/
 
 ## Why Amethyst?
 
