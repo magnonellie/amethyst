@@ -1,3 +1,5 @@
+# Fuck travis
+
 # Set up the Rust toolchain.
 language: rust
 rust:
