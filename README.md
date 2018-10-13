@@ -18,7 +18,7 @@
 
 ## What is Amethyst?!
 
-Amethyst is a game engine aiming to be fast and as configurable as possible.
+A worse Godot
 
 ## Principles
 
