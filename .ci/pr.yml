@@ -23,11 +23,11 @@ jobs:
   - put: pull-request
     params: { path: pull-request, status: pending, context: linux }
   - task: tests
+    input_mapping: { amethyst: pull-request }
     file: amethyst/.ci/tasks/linux-test.yml
-    input_mapping: { amethyst: pull-request }
   - task: book
-    file: amethyst/.ci/tasks/linux-book.yml
     input_mapping: { amethyst: pull-request }
+    file: amethyst/.ci/tasks/linux-book.yml
   - put: pull-request
     params: { path: pull-request, status: success, context: linux }
   on_failure:
@@ -42,8 +42,8 @@ jobs:
   - put: pull-request
     params: { path: pull-request, status: pending, context: windows }
   - task: tests
-    file: amethyst/.ci/tasks/windows-test.yml
     input_mapping: { amethyst: pull-request }
+    file: amethyst/.ci/tasks/windows-test.yml
   - put: pull-request
     params: { path: pull-request, status: success, context: windows }
   on_failure:
