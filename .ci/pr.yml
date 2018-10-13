@@ -24,8 +24,10 @@ jobs:
     params: { path: pull-request, status: pending, context: linux }
   - task: tests
     file: amethyst/.ci/tasks/linux-test.yml
+    input_mapping: { amethyst: pull-request }
   - task: book
     file: amethyst/.ci/tasks/linux-book.yml
+    input_mapping: { amethyst: pull-request }
   - put: pull-request
     params: { path: pull-request, status: success, context: linux }
   on_failure:
@@ -41,6 +43,7 @@ jobs:
     params: { path: pull-request, status: pending, context: windows }
   - task: tests
     file: amethyst/.ci/tasks/windows-test.yml
+    input_mapping: { amethyst: pull-request }
   - put: pull-request
     params: { path: pull-request, status: success, context: windows }
   on_failure:
@@ -52,7 +55,6 @@ jobs:
   - get: pull-request
     trigger: true
     version: every
-  - try:
-      task: check
-      file: amethyst/.ci/tasks/linux-rustfmt.yml
-      # TODO: send a helpful message to the PR if this fails
+  - task: check
+    file: amethyst/.ci/tasks/linux-rustfmt.yml
+    # TODO: send a helpful message to the PR if this fails

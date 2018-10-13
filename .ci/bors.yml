@@ -100,10 +100,9 @@ jobs:
   - get: amethyst
     trigger: true
   - get: nightly-rust
-  - try:
-      task: tests
-      image: nightly-rust
-      file: amethyst/.ci/tasks/linux-test.yml
+  - task: tests
+    image: nightly-rust
+    file: amethyst/.ci/tasks/linux-test.yml
 
 # Windows jobs
 - name: windows-rust-stable
@@ -139,7 +138,6 @@ jobs:
   plan:
   - get: amethyst
     trigger: true
-  - try:
-      task: tests
-      file: amethyst/.ci/tasks/windows-test.yml
-      params: { RUST_CHANNEL: nightly }
+  - task: tests
+    file: amethyst/.ci/tasks/windows-test.yml
+    params: { RUST_CHANNEL: nightly }
