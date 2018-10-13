@@ -1,5 +1,7 @@
 ---
 resource_types:
+# The only requirement bors has for testing stuff is that the commit gets marked with its build status. That's what this
+# resource type accomplishes.
 - name: github-status
   type: docker-image
   source:
@@ -12,13 +14,40 @@ resources:
   source:
     uri: https://github.com/magnonellie/amethyst
     branch: ((branch))
-- name: commit-status
+
+- name: linux-stable-status
   type: github-status
   source:
     repository: magnonellie/amethyst
     access_token: ((repo_github_token))
     branch: ((branch))
+    context: linux-rust-stable
 
+- name: linux-beta-status
+  type: github-status
+  source:
+    repository: magnonellie/amethyst
+    access_token: ((repo_github_token))
+    branch: ((branch))
+    context: linux-rust-stable
+
+- name: windows-stable-status
+  type: github-status
+  source:
+    repository: magnonellie/amethyst
+    access_token: ((repo_github_token))
+    branch: ((branch))
+    context: windows-rust-stable
+
+- name: windows-beta-status
+  type: github-status
+  source:
+    repository: magnonellie/amethyst
+    access_token: ((repo_github_token))
+    branch: ((branch))
+    context: windows-rust-beta
+
+# Stable Rust is used by default, so no need to have it as a resource.
 - name: beta-rust
   type: docker-image
   source: { repository: rustdocker/rust, tag: beta }
@@ -30,30 +59,40 @@ jobs:
 # Linux jobs
 - name: linux-rust-stable
   plan:
+  # Fetch Amethyst from ((branch)) when a new commit is available.
   - get: amethyst
     trigger: true
-  - put: commit-status
+  # Assign the commit a status of pending.
+  - put: linux-stable-status
     params: { state: pending, commit: amethyst }
+  # Run the unit tests (gets an output for the target directory).
   - task: tests
     file: amethyst/.ci/tasks/linux-test.yml
+  # Test snippets from the book (takes an input of a target directory).
   - task: book
     file: amethyst/.ci/tasks/linux-book.yml
+  # Assign the commit a status of success
+  - put: linux-stable-status
+    params: { state: success, commit: amethyst }
   on_failure:
-    put: commit-status
+    # If the build failed, set the build status to failed.
+    put: linux-stable-status
     params: { state: failure, commit: amethyst }
 
 - name: linux-rust-beta
   plan:
   - get: amethyst
     trigger: true
-  - put: commit-status
+  - put: linux-beta-status
     params: { state: pending, commit: amethyst }
   - get: beta-rust
   - task: tests
     image: beta-rust
     file: amethyst/.ci/tasks/linux-test.yml
+  - put: linux-beta-status
+    params: { state: success, commit: amethyst }
   on_failure:
-    put: commit-status
+    put: linux-beta-status
     params: { state: failure, commit: amethyst }
 
 - name: linux-rust-nightly
@@ -71,25 +110,29 @@ jobs:
   plan:
   - get: amethyst
     trigger: true
-  - put: commit-status
+  - put: windows-stable-status
     params: { state: pending, commit: amethyst }
   - task: tests
     file: amethyst/.ci/tasks/windows-test.yml
+  - put: windows-stable-status
+    params: { state: success, commit: amethyst }
   on_failure:
-    put: commit-status
+    put: windows-stable-status
     params: { state: failure, commit: amethyst }
 
 - name: windows-rust-beta
   plan:
   - get: amethyst
     trigger: true
-  - put: commit-status
+  - put: windows-beta-status
     params: { state: pending, commit: amethyst }
   - task: tests
     file: amethyst/.ci/tasks/windows-test.yml
     params: { RUST_CHANNEL: beta }
+  - put: windows-beta-status
+    params: { state: success, commit: amethyst }
   on_failure:
-    put: commit-status
+    put: windows-beta-status
     params: { state: failure, commit: amethyst }
 
 - name: windows-rust-nightly
@@ -100,12 +143,3 @@ jobs:
       task: tests
       file: amethyst/.ci/tasks/windows-test.yml
       params: { RUST_CHANNEL: nightly }
-
-# Approve the commit so that bors is happy :D
-- name: approve-commit
-  plan:
-  - get: amethyst
-    passed: [linux-rust-stable, linux-rust-beta, windows-rust-stable, windows-rust-beta]
-    trigger: true
-  - put: commit-status
-    params: { state: success, commit: amethyst }
