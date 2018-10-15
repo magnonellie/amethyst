@@ -34,4 +34,4 @@ before_install:
 
 # Generate documentation, compile the engine, run tests.
 script:
-- docker run -v .:/amethyst magnonellie/amethyst-docker-cache:$CHANNEL 'mv ../target target && sh travis.sh'
+- docker run -v `pwd`:/amethyst magnonellie/amethyst-docker-cache:$CHANNEL sh -exc 'mv ../target target && sh travis.sh'
