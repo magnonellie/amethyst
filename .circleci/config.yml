@@ -1,8 +1,7 @@
 version: 2
 jobs:
   test-linux-stable:
-    docker:
-    - image: rustdocker/rust:stable
+    machine: true
     steps:
     - checkout
     - run:
@@ -10,7 +9,10 @@ jobs:
         command: |
           apt-get update && apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
-          python3 build-essential libsdl2-dev gcc
+          python3 build-essential libsdl2-dev gcc && \
+          wget "https://static.rust-lang.org/rustup/archive/%%RUSTUP-VERSION%%/${rustArch}/rustup-init" && \
+          chmod +x rustup-init && \
+          ./rustup-init -y --default-toolchain stable
     - run:
         name: Tests
         command: . ~/.cargo/env && cargo test --all
@@ -36,7 +38,10 @@ jobs:
         command: |
           apt-get update && apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
-          python3 build-essential libsdl2-dev gcc
+          python3 build-essential libsdl2-dev gcc && \
+          wget "https://static.rust-lang.org/rustup/archive/%%RUSTUP-VERSION%%/${rustArch}/rustup-init" && \
+          chmod +x rustup-init && \
+          ./rustup-init -y --default-toolchain stable
     - run:
         name: Tests
         command: . ~/.cargo/env && cargo test --all
@@ -50,7 +55,10 @@ jobs:
         command: |
           apt-get update && apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
-          python3 build-essential libsdl2-dev gcc
+          python3 build-essential libsdl2-dev gcc && \
+          wget "https://static.rust-lang.org/rustup/archive/%%RUSTUP-VERSION%%/${rustArch}/rustup-init" && \
+          chmod +x rustup-init && \
+          ./rustup-init -y --default-toolchain stable
     - run:
         name: Tests
         command: . ~/.cargo/env && cargo test --all
