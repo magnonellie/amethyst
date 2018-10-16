@@ -6,6 +6,12 @@ jobs:
     steps:
     - checkout
     - run:
+        name: Install dependencies
+        command: |
+          apt-get update && apt-get install -y \
+          git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
+          python3 build-essential libsdl2-dev
+    - run:
         name: Tests
         command: . ~/.cargo/env && cargo test --all
     - run:
@@ -26,6 +32,12 @@ jobs:
     steps:
     - checkout
     - run:
+        name: Install dependencies
+        command: |
+          apt-get update && apt-get install -y \
+          git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
+          python3 build-essential libsdl2-dev
+    - run:
         name: Tests
         command: . ~/.cargo/env && cargo test --all
   test-linux-nightly:
@@ -33,6 +45,12 @@ jobs:
     - image: rustdocker/rust:nightly
     steps:
     - checkout
+    - run:
+        name: Install dependencies
+        command: |
+          apt-get update && apt-get install -y \
+          git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
+          python3 build-essential libsdl2-dev
     - run:
         name: Tests
         command: . ~/.cargo/env && cargo test --all
