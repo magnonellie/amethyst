@@ -9,7 +9,7 @@ jobs:
         command: |
           sudo apt-get update && sudo apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
-          python3 build-essential libsdl2-dev libsdl2-2.0-0 gcc && \
+          python3 build-essential libsdl2-dev libsdl2-2.0-0 gcc libegl1-mesa-dev libgles2-mesa-dev && \
           wget "https://static.rust-lang.org/rustup/archive/%%RUSTUP-VERSION%%/${rustArch}/rustup-init" && \
           chmod +x rustup-init && \
           ./rustup-init -y --default-toolchain stable
@@ -37,7 +37,7 @@ jobs:
         command: |
           sudo apt-get update && sudo apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
-          python3 build-essential libsdl2-dev libsdl2-2.0-0 gcc && \
+          python3 build-essential libsdl2-dev libsdl2-2.0-0 gcc libegl1-mesa-dev libgles2-mesa-dev && \
           wget "https://static.rust-lang.org/rustup/archive/%%RUSTUP-VERSION%%/${rustArch}/rustup-init" && \
           chmod +x rustup-init && \
           ./rustup-init -y --default-toolchain stable
@@ -53,7 +53,7 @@ jobs:
         command: |
           sudo apt-get update && sudo apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
-          python3 build-essential libsdl2-dev libsdl2-2.0-0 gcc && \
+          python3 build-essential libsdl2-dev libsdl2-2.0-0 gcc libegl1-mesa-dev libgles2-mesa-dev && \
           wget "https://static.rust-lang.org/rustup/archive/%%RUSTUP-VERSION%%/${rustArch}/rustup-init" && \
           chmod +x rustup-init && \
           ./rustup-init -y --default-toolchain stable
