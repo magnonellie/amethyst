@@ -87,6 +87,9 @@ ron = "0.4"
 [build-dependencies]
 vergen = "2.0"
 
+[profile.test]
+opt-level = "z"
+
 [[example]]
 name = "hello_world"
 path = "examples/hello_world/main.rs"

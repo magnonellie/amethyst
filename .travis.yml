@@ -1,6 +1,6 @@
 sudo: required
 
-language: generic
+language: rust
 
 services:
 - docker
@@ -9,33 +9,33 @@ matrix:
   fast_finish: true
   include:
   - os: linux
-    env: CHANNEL=stable
-  - os: linux
-    env: CHANNEL=stable
-    if: type != pull_request
-  - os: linux
-    env: CHANNEL=nightly
-    if: type != pull_request
-  - os: windows
-    env: CHANNEL=stable
-    if: type != pull_request
-  - os: windows
-    env: CHANNEL=beta
-    if: type != pull_request
-  - os: windows
-    env: CHANNEL=nightly
-    if: type != pull_request
-  - os: osx
-    env: CHANNEL=stable
-    if: type != pull_request
-  - os: osx
-    env: CHANNEL=beta
-    if: type != pull_request
-  - os: osx
-    env: CHANNEL=nightly
-    if: type != pull_request
+    rust: stable
+#  - os: linux
+#    rust: beta
+#    if: type != pull_request
+#  - os: linux
+#    rust: nightly
+#    if: type != pull_request
+#  - os: windows
+#    rust: stable
+#    if: type != pull_request
+#  - os: windows
+#    rust: beta
+#    if: type != pull_request
+#  - os: windows
+#    rust: nightly
+#    if: type != pull_request
+#  - os: osx
+#    rust: stable
+#    if: type != pull_request
+#  - os: osx
+#    rust: beta
+#    if: type != pull_request
+#  - os: osx
+#    rust: nightly
+#    if: type != pull_request
   allow_failures:
-  - env: CHANNEL=nightly
+  - rust: nightly
 
 branches:
   only:
@@ -43,21 +43,14 @@ branches:
   - trying
   - master # remove
 
+cache:
+- cargo
+
+before_script:
+- export PATH=$PATH:/home/travis/.cargo/bin
+
 # Generate documentation, compile the engine, run tests.
 script:
 - |
-  export RUSTFLAGS="-D warnings"
-
-  echo "Build and test"
-  cargo test --all --release
-
-  if [ ${CHANNEL} = "stable" ]
-  then
-    if [ ${TRAVIS_OS_NAME} = "linux" ]
-    then
-      mdbook test book -L target/debug/deps
-    fi
-
-    echo "Build and test with sdl_controller"
-    cargo check --all --release --features sdl_controller,profiler
-  fi
+  docker run -v `pwd`:/amethyst magnonellie/amethyst-docker-cache:$CHANNEL \
+  sh -exc 'sh travis.sh'
