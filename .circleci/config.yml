@@ -1,0 +1,38 @@
+version: 2
+jobs:
+  test-linux-stable:
+    docker:
+    - image: rustdocker/rust:stable
+    steps:
+    - checkout
+    - run:
+        name: Tests
+        command: cargo test --all
+    - run:
+        name: Fetch mdbook
+        command: |
+          curl -L -o mdbook.tar.gz https://github.com/rust-lang-nursery/mdBook/releases/download/${MDBOOK_RELEASE}
+          tar -xvf mdbook.tar.gz -C ./
+          rm mdbook.tar.gz
+    - run:
+        name: Book
+        command: mdbook test book -L target/debug/deps
+    - run:
+        name: Check features
+        command: cargo check --all --features sdl_controller,profiler
+  test-linux-beta:
+    docker:
+    - image: rustdocker/rust:beta
+    steps:
+    - checkout
+    - run:
+        name: Tests
+        command: cargo test --all
+  test-linux-nightly:
+    docker:
+    - image: rustdocker/rust:nightly
+    steps:
+    - checkout
+    - run:
+        name: Tests
+        command: cargo test --all
