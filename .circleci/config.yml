@@ -7,7 +7,7 @@ jobs:
     - checkout
     - run:
         name: Tests
-        command: cargo test --all
+        command: . ~/.cargo/env && cargo test --all
     - run:
         name: Fetch mdbook
         command: |
@@ -19,7 +19,7 @@ jobs:
         command: mdbook test book -L target/debug/deps
     - run:
         name: Check features
-        command: cargo check --all --features sdl_controller,profiler
+        command: . ~/.cargo/env && cargo check --all --features sdl_controller,profiler
   test-linux-beta:
     docker:
     - image: rustdocker/rust:beta
@@ -27,7 +27,7 @@ jobs:
     - checkout
     - run:
         name: Tests
-        command: cargo test --all
+        command: . ~/.cargo/env && cargo test --all
   test-linux-nightly:
     docker:
     - image: rustdocker/rust:nightly
@@ -35,12 +35,12 @@ jobs:
     - checkout
     - run:
         name: Tests
-        command: cargo test --all
+        command: . ~/.cargo/env && cargo test --all
 
 workflows:
   version: 2
   build_and_test:
     jobs:
     - test-linux-stable
-    - test-linux-bet
+    - test-linux-beta
     - test-linux-nightly
