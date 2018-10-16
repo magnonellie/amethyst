@@ -16,22 +16,48 @@ matrix:
   - os: linux
     env: CHANNEL=nightly
     if: type != pull_request
+  - os: windows
+    env: CHANNEL=stable
+    if: type != pull_request
+  - os: windows
+    env: CHANNEL=beta
+    if: type != pull_request
+  - os: windows
+    env: CHANNEL=nightly
+    if: type != pull_request
+  - os: osx
+    env: CHANNEL=stable
+    if: type != pull_request
+  - os: osx
+    env: CHANNEL=beta
+    if: type != pull_request
+  - os: osx
+    env: CHANNEL=nightly
+    if: type != pull_request
   allow_failures:
   - env: CHANNEL=nightly
 
-# Build the Bors staging and trying branches, plus PRs to master, and
-# the latest release branch.
 branches:
   only:
   - staging
   - trying
-  - master
-  - /release-.*/
-
-# Install SDL development libraries from homebrew on macOS
-before_install:
-- "if [ ${TRAVIS_OS_NAME} = 'osx' ]; then brew update && brew install sdl2; fi"
+  - master # remove
 
 # Generate documentation, compile the engine, run tests.
 script:
-- docker run -v `pwd`:/amethyst magnonellie/amethyst-docker-cache:$CHANNEL sh -exc 'ls / && mv ../amethyst-target target && sh travis.sh'
+- |
+  export RUSTFLAGS="-D warnings"
+
+  echo "Build and test"
+  cargo test --all --release
+
+  if [ ${CHANNEL} = "stable" ]
+  then
+    if [ ${TRAVIS_OS_NAME} = "linux" ]
+    then
+      mdbook test book -L target/debug/deps
+    fi
+
+    echo "Build and test with sdl_controller"
+    cargo check --all --release --features sdl_controller,profiler
+  fi
