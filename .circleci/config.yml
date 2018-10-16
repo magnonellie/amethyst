@@ -36,3 +36,11 @@ jobs:
     - run:
         name: Tests
         command: cargo test --all
+
+workflows:
+  version: 2
+  build_and_test:
+    jobs:
+    - test-linux-stable
+    - test-linux-bet
+    - test-linux-nightly
