@@ -10,7 +10,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
           python3 build-essential libsdl2-dev libsdl2-2.0-0 gcc libegl1-mesa-dev libgles2-mesa-dev && \
-          wget "https://sh.rustup.rs" && \
+          wget "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" && \
           chmod +x rustup-init && \
           ./rustup-init -y --default-toolchain stable
     - run:
@@ -38,7 +38,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
           python3 build-essential libsdl2-dev libsdl2-2.0-0 gcc libegl1-mesa-dev libgles2-mesa-dev && \
-          wget "https://sh.rustup.rs" && \
+          wget "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" && \
           chmod +x rustup-init && \
           ./rustup-init -y --default-toolchain stable
     - run:
@@ -54,7 +54,7 @@ jobs:
           sudo apt-get update && sudo apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
           python3 build-essential libsdl2-dev libsdl2-2.0-0 gcc libegl1-mesa-dev libgles2-mesa-dev && \
-          wget "https://sh.rustup.rs" && \
+          wget "https://static.rust-lang.org/rustup/dist/x86_64-unknown-linux-gnu/rustup-init" && \
           chmod +x rustup-init && \
           ./rustup-init -y --default-toolchain stable
     - run:
