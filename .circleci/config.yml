@@ -10,14 +10,14 @@ jobs:
         command: |
           apt-get update && apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
-          python3 build-essential libsdl2-dev
+          python3 build-essential libsdl2-dev gcc
     - run:
         name: Tests
         command: . ~/.cargo/env && cargo test --all
     - run:
         name: Fetch mdbook
         command: |
-          curl -L -o mdbook.tar.gz https://github.com/rust-lang-nursery/mdBook/releases/download/${MDBOOK_RELEASE}
+          curl -L -o mdbook.tar.gz https://github.com/rust-lang-nursery/mdBook/releases/download/0.2.1
           tar -xvf mdbook.tar.gz -C ./
           rm mdbook.tar.gz
     - run:
@@ -36,7 +36,7 @@ jobs:
         command: |
           apt-get update && apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
-          python3 build-essential libsdl2-dev
+          python3 build-essential libsdl2-dev gcc
     - run:
         name: Tests
         command: . ~/.cargo/env && cargo test --all
@@ -50,7 +50,7 @@ jobs:
         command: |
           apt-get update && apt-get install -y \
           git libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev \
-          python3 build-essential libsdl2-dev
+          python3 build-essential libsdl2-dev gcc
     - run:
         name: Tests
         command: . ~/.cargo/env && cargo test --all
