@@ -1,6 +1,6 @@
 sudo: required
 
-language: rust
+language: generic
 
 services:
 - docker
@@ -9,7 +9,7 @@ matrix:
   fast_finish: true
   include:
   - os: linux
-    rust: stable
+#    rust: stable
 #  - os: linux
 #    rust: beta
 #    if: type != pull_request
@@ -43,8 +43,8 @@ branches:
   - trying
   - master # remove
 
-cache:
-- cargo
+#cache:
+#- cargo
 
 before_script:
 - export PATH=$PATH:/home/travis/.cargo/bin
@@ -52,5 +52,5 @@ before_script:
 # Generate documentation, compile the engine, run tests.
 script:
 - |
-  docker run -v `pwd`:/amethyst magnonellie/amethyst-docker-cache:$CHANNEL \
+  docker run -v `pwd`:/amethyst magnonellie/amethyst-docker-cache:stable \
   sh -exc 'sh travis.sh'
