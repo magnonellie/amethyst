@@ -59,11 +59,7 @@ Please visit the [features page][feat] for a list of features Amethyst provides.
 
 ## Usage
 
-While the engine can be hard to use at times, we made a lot of [documentation][bk] that will teach you everything you need to use amethyst comfortably!
-
-If you don't understand a part of the documentation, please let us know. Join us on discord or open an issue, we are always happy to help!
-
-[bk]: https://www.amethyst.rs/book/latest/
+Install Godot. Please.
 
 ## Getting started
 
