@@ -1,0 +1,34 @@
+---
+platform: linux
+
+params:
+  MDBOOK_RELEASE: 0.2.1
+
+image_resource:
+  type: docker-image
+  source:
+    repository: rustdocker/rust
+    tag: stable
+
+inputs:
+- name: amethyst
+- name: target
+
+run:
+  path: sh
+  dir: amethyst
+  args:
+  - -exc
+  - |
+    echo "Fetching dependencies..."
+    apt-get update > /dev/null
+    apt-get install -y \
+      libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev python3 \
+      build-essential libsdl2-dev > /dev/null
+    echo "Done!"
+    echo "Restoring target cache..."
+    cp ../target ./target
+    echo "Testing the book..."
+    export PATH="$HOME/.cargo/bin:$PATH"
+    cargo install mdbook --vers "$MDBOOK_RELEASE"
+    mdbook test book -L target/debug/deps
