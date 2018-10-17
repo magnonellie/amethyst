@@ -25,11 +25,8 @@ run:
     apt-get install -y \
       libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev python3 \
       build-essential libsdl2-dev > /dev/null
-    echo "Done!"
-    echo "Restoring target cache..."
-    cp ../target ./target
     echo "Testing the book..."
-    curl -L -o mdbook.tar.gz https://github.com/rust-lang-nursery/mdBook/releases/download/${MDBOOK_RELEASE}
+    curl -L -o mdbook.tar.gz https://github.com/rust-lang-nursery/mdBook/releases/download/v${MDBOOK_RELEASE}/mdbook-v${MDBOOK_RELEASE}-x86_64-unknown-linux-gnu.tar.gz
     tar -xvf mdbook.tar.gz -C ./
     rm mdbook.tar.gz
-    ./mdbook test book -L target/debug/deps
+    ./mdbook test book -L ../target/debug/deps

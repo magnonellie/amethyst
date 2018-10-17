@@ -59,6 +59,7 @@ before_install:
   then
     brew update && brew install sdl2
   else
+    export MDBOOK_RELEASE = "v0.2.1/mdbook-v0.2.1-x86_64-unknown-linux-gnu.tar.gz"
     curl -L -o mdbook.tar.gz https://github.com/rust-lang-nursery/mdBook/releases/download/${MDBOOK_RELEASE}
     tar -xvf mdbook.tar.gz -C ./
     rm mdbook.tar.gz

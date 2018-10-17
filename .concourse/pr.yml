@@ -27,17 +27,21 @@ jobs:
 
   - put: pull-request
     params: { path: amethyst, status: pending, context: linux-tests }
+  - put: pull-request
+    params: { path: amethyst, status: pending, context: linux-book-tests }
+
   - task: tests
     input_mapping: { amethyst: pull-request }
     file: amethyst/.concourse/tasks/linux-test.yml
     on_failure:
-      put: pull-request
-      params: { path: amethyst, status: failure, context: linux-test }
+      do:
+      - put: pull-request
+        params: { path: amethyst, status: failure, context: linux-test }
+      - put: pull-request
+        params: { path: amethyst, status: failure, context: linux-book-tests }
   - put: pull-request
     params: { path: amethyst, status: success, context: linux-tests }
 
-  - put: pull-request
-    params: { path: amethyst, status: pending, context: linux-book-tests }
   - task: book
     input_mapping: { amethyst: pull-request }
     file: amethyst/.concourse/tasks/linux-book.yml
