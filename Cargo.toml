@@ -1,5 +1,5 @@
 [package]
-name = "amethyst"
+name = "godot"
 version = "0.8.0"
 authors = ["Eyal Kalderon <ebkalderon@gmail.com>"]
 description = "Data-oriented game engine written in Rust"
