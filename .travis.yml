@@ -77,7 +77,7 @@ script:
   if [ ${TRAVIS_RUST_VERSION} = "stable" ] && [ ${TRAVIS_OS_NAME} = "linux" ]
   then
     echo "Test book"
-    mdbook test book -L target/debug/deps
+    ./mdbook test book -L target/debug/deps
   fi
 - |
   if [ ${TRAVIS_RUST_VERSION} = "stable" ]

@@ -1,9 +1,6 @@
 ---
 platform: linux
 
-params:
-  MDBOOK_RELEASE: 0.2.1
-
 image_resource:
   type: docker-image
   source:
