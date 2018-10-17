@@ -48,18 +48,18 @@ branches:
 
 before_install:
 - |
-  if [ ${TRAVIS_OS_NAME} = "windows" ]
+  if [ ${TRAVIS_OS_NAME} == "windows" ]
   then
     wget --no-check-certificate https://www.libsdl.org/release/SDL2-devel-2.0.8-VC.zip
     7z x SDL2-devel-2.0.8-VC.zip
     cp SDL2-2.0.8/lib/x64/*.lib ${HOME}/.rustup/toolchains/${TRAVIS_RUST_VERSION}-x86_64-pc-windows-msvc/lib/rustlib/x86_64-pc-windows-msvc/lib
     cp SDL2-2.0.8/lib/x64/*.dll .
     rm SDL2-devel-2.0.8-VC.zip
-  elif [ ${TRAVIS_OS_NAME} = "osx" ]
+  elif [ ${TRAVIS_OS_NAME} == "osx" ]
   then
     brew update && brew install sdl2
   else
-    export MDBOOK_RELEASE = "v0.2.1/mdbook-v0.2.1-x86_64-unknown-linux-gnu.tar.gz"
+    export MDBOOK_RELEASE="v0.2.1/mdbook-v0.2.1-x86_64-unknown-linux-gnu.tar.gz"
     curl -L -o mdbook.tar.gz https://github.com/rust-lang-nursery/mdBook/releases/download/${MDBOOK_RELEASE}
     tar -xvf mdbook.tar.gz -C ./
     rm mdbook.tar.gz
@@ -75,13 +75,13 @@ script:
   echo "Build and test"
   cargo test --all || exit 1
 - |
-  if [ ${TRAVIS_RUST_VERSION} = "stable" ] && [ ${TRAVIS_OS_NAME} = "linux" ]
+  if [ ${TRAVIS_RUST_VERSION} == "stable" ] && [ ${TRAVIS_OS_NAME} == "linux" ]
   then
     echo "Test book"
     ./mdbook test book -L target/debug/deps
   fi
 - |
-  if [ ${TRAVIS_RUST_VERSION} = "stable" ]
+  if [ ${TRAVIS_RUST_VERSION} == "stable" ]
   then
     echo "Check common features"
     cargo check --all --features sdl_controller,profiler
