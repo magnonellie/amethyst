@@ -4,7 +4,7 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: rustdocker/rust
+    repository: magnonellie/amethyst-dependencies
     tag: stable
 
 inputs:
@@ -20,13 +20,6 @@ run:
   args:
   - -exc
   - |
-    echo "Fetching dependencies..."
-    apt-get update > /dev/null
-    apt-get install -y \
-      libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev python3 \
-      build-essential libsdl2-dev > /dev/null
-    echo "Running tests..."
-    export PATH="$HOME/.cargo/bin:$PATH"
     export RUSTFLAGS="-D warnings"
     cargo check --all --features sdl_controller,profiler
     export CARGO_TARGET_DIR="../target"
