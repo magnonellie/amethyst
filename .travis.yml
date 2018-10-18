@@ -8,37 +8,15 @@ addons:
     - libasound2-dev
     - libsdl2-dev
 
-matrix:
-  fast_finish: true
-  include:
-  - os: linux
-    rust: stable
-  - os: linux
-    rust: beta
-    if: type != pull_request
-  - os: linux
-    rust: nightly
-    if: type != pull_request
-  - os: windows
-    rust: stable
-    if: type != pull_request
-  - os: windows
-    rust: beta
-    if: type != pull_request
-  - os: windows
-    rust: nightly
-    if: type != pull_request
-  - os: osx
-    rust: stable
-    if: type != pull_request
-  - os: osx
-    rust: beta
-    if: type != pull_request
-  - os: osx
-    rust: nightly
-    if: type != pull_request
-  allow_failures:
-  - rust: nightly
+os:
+- linux
+- osx
+- windows
+
+rust:
+- stable
+- beta
+- nightly
 
 branches:
   only:
