@@ -27,7 +27,6 @@ branches:
   only:
   - staging
   - trying
-  - master # remove
 
 before_install:
 - |
