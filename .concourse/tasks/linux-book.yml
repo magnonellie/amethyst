@@ -29,7 +29,9 @@ run:
     curl -L -o mdbook.tar.gz https://github.com/rust-lang-nursery/mdBook/releases/download/v${MDBOOK_RELEASE}/mdbook-v${MDBOOK_RELEASE}-x86_64-unknown-linux-gnu.tar.gz
     tar -xvf mdbook.tar.gz -C ./
     rm mdbook.tar.gz
-    ls ../
-    ls
-    ls ../target || 0
+    ls book
+    ls book/src
+    ls ../target/debug
+    ls ../target/debug/deps
+    export CARGO_TARGET_DIR="../target"
     ./mdbook test book -L ../target/debug/deps
