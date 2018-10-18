@@ -26,9 +26,10 @@ run:
       libasound2-dev libx11-xcb-dev libssl-dev cmake libfreetype6-dev libexpat1-dev libxcb1-dev python3 \
       build-essential libsdl2-dev > /dev/null
     echo "Testing the book..."
-    curl -L -o mdbook.tar.gz https://github.com/rust-lang-nursery/mdBook/releases/download/v${MDBOOK_RELEASE}/mdbook-v${MDBOOK_RELEASE}-x86_64-unknown-linux-gnu.tar.gz
-    tar -xvf mdbook.tar.gz -C ./
-    rm mdbook.tar.gz
+#    curl -L -o mdbook.tar.gz https://github.com/rust-lang-nursery/mdBook/releases/download/v${MDBOOK_RELEASE}/mdbook-v${MDBOOK_RELEASE}-x86_64-unknown-linux-gnu.tar.gz
+#    tar -xvf mdbook.tar.gz -C ./
+#    rm mdbook.tar.gz
+    cargo install mdbook
     ls book
     ls book/src
     ls ../target/debug
