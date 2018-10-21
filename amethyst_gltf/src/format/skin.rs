@@ -1,7 +1,7 @@
 use super::{Buffers, GltfError};
 use animation::{JointPrefab, SkinPrefab, SkinnablePrefab};
 use assets::Prefab;
-use core::cgmath::{Matrix4, SquareMatrix};
+use core::nalgebra::Matrix4;
 use gltf;
 use renderer::JointTransformsPrefab;
 use std::collections::HashMap;

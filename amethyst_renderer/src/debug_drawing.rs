@@ -1,4 +1,4 @@
-use amethyst_core::cgmath::{Point3, Vector3};
+use amethyst_core::nalgebra::{Point3, Vector3};
 use amethyst_core::specs::{Component, DenseVecStorage};
 use color::Rgba;
 use vertex::PosColorNorm;

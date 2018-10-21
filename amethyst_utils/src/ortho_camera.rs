@@ -1,6 +1,6 @@
 //! Provides a automatically resized orthographic camera.
 
-use amethyst_core::cgmath::Ortho;
+use amethyst_core::nalgebra::Orthographic3;
 use amethyst_core::specs::{
     Component, DenseVecStorage, Join, ReadExpect, ReadStorage, System, WriteStorage,
 };
@@ -214,17 +214,15 @@ impl<'a> System<'a> for CameraOrthoSystem {
             for (mut camera, ortho_camera) in (&mut cameras, &ortho_cameras).join() {
                 let offsets = ortho_camera.camera_offsets(aspect);
 
-                // Find the previous near and far would require
-                // solving a linear system of two equation from
-                // https://docs.rs/cgmath/0.16.1/src/cgmath/projection.rs.html#246-278
-                camera.proj = Ortho {
-                    left: offsets.0,
-                    right: offsets.1,
-                    bottom: offsets.2,
-                    top: offsets.3,
-                    near: 0.1,
-                    far: 2000.0,
-                }.into();
+                let prev = Orthographic3::from_matrix_unchecked(camera.proj);
+                camera.proj = Orthographic3::new(
+                    offsets.0,
+                    offsets.1,
+                    offsets.2,
+                    offsets.3,
+                    prev.znear(),
+                    prev.zfar(),
+                ).to_homogeneous();
             }
         }
     }

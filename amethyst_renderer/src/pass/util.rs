@@ -1,7 +1,7 @@
 use std::mem;
 
 use amethyst_assets::AssetStorage;
-use amethyst_core::cgmath::{Matrix4, One, SquareMatrix};
+use amethyst_core::nalgebra::Matrix4;
 use amethyst_core::specs::prelude::{Join, Read, ReadStorage};
 use amethyst_core::GlobalTransform;
 use cam::{ActiveCamera, Camera};
@@ -243,14 +243,24 @@ pub fn set_vertex_args(
 ) {
     let vertex_args = camera
         .as_ref()
-        .map(|&(ref cam, ref transform)| VertexArgs {
-            proj: cam.proj.into(),
-            view: transform.0.invert().unwrap().into(),
-            model: global.0.into(),
-        }).unwrap_or_else(|| VertexArgs {
-            proj: Matrix4::one().into(),
-            view: Matrix4::one().into(),
-            model: global.0.into(),
+        .map(|&(ref cam, ref transform)| {
+            let proj: [[f32; 4]; 4] = cam.proj.into();
+            let view: [[f32; 4]; 4] = transform.0.try_inverse().unwrap().into();
+            let model: [[f32; 4]; 4] = global.0.into();
+            VertexArgs {
+                proj: proj.into(),
+                view: view.into(),
+                model: model.into(),
+            }
+        }).unwrap_or_else(|| {
+            let proj: [[f32; 4]; 4] = Matrix4::identity().into();
+            let view: [[f32; 4]; 4] = Matrix4::identity().into();
+            let model: [[f32; 4]; 4] = global.0.into();
+            VertexArgs {
+                proj: proj.into(),
+                view: view.into(),
+                model: model.into(),
+            }
         });
     effect.update_constant_buffer("VertexArgs", &vertex_args.std140(), encoder);
 }
@@ -262,12 +272,19 @@ pub fn set_view_args(
 ) {
     let view_args = camera
         .as_ref()
-        .map(|&(ref cam, ref transform)| ViewArgs {
-            proj: cam.proj.into(),
-            view: transform.0.invert().unwrap().into(),
-        }).unwrap_or_else(|| ViewArgs {
-            proj: Matrix4::one().into(),
-            view: Matrix4::one().into(),
+        .map(|&(ref cam, ref transform)| {
+            let proj: [[f32; 4]; 4] = cam.proj.into();
+            let view: [[f32; 4]; 4] = transform.0.try_inverse().unwrap().into();
+            ViewArgs {
+                proj: proj.into(),
+                view: view.into(),
+            }
+        }).unwrap_or_else(|| {
+            let identity: [[f32; 4]; 4] = Matrix4::identity().into();
+            ViewArgs {
+                proj: identity.clone().into(),
+                view: identity.into(),
+            }
         });
     effect.update_constant_buffer("ViewArgs", &view_args.std140(), encoder);
 }

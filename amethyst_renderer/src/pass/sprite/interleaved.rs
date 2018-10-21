@@ -1,7 +1,7 @@
 //! Flat forward drawing pass that mimics a blit.
 
 use amethyst_assets::{AssetStorage, Handle};
-use amethyst_core::cgmath::Vector4;
+use amethyst_core::nalgebra::Vector4;
 use amethyst_core::specs::prelude::{Join, Read, ReadStorage};
 use amethyst_core::transform::GlobalTransform;
 
@@ -285,8 +285,10 @@ impl SpriteBatch {
 
             let transform = &sprite.transform.0;
 
-            let dir_x = transform.x * sprite_data.width;
-            let dir_y = transform.y * sprite_data.height;
+            let dir_x = transform.column(0) * sprite_data.width;
+            let dir_y = transform.column(1) * sprite_data.height;
+            let dir_x = dir_x.as_slice();
+            let dir_y = dir_y.as_slice();
 
             // The offsets are negated to shift the sprite left and down relative to the entity, in
             // regards to pivot points. This is the convention adopted in:
@@ -297,7 +299,7 @@ impl SpriteBatch {
                 * Vector4::new(-sprite_data.offsets[0], -sprite_data.offsets[1], 0.0, 1.0);
 
             instance_data.extend(&[
-                dir_x.x, dir_x.y, dir_y.x, dir_y.y, pos.x, pos.y, uv_left, uv_right, uv_bottom,
+                dir_x[0], dir_x[1], dir_y[0], dir_y[1], pos.x, pos.y, uv_left, uv_right, uv_bottom,
                 uv_top, pos.z,
             ]);
             num_instances += 1;

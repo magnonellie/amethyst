@@ -1,7 +1,7 @@
 //! Debug lines pass
 
 use super::*;
-use amethyst_core::cgmath::{Matrix4, One};
+use amethyst_core::nalgebra::{self as na};
 use amethyst_core::specs::{Join, Read, ReadStorage, Write, WriteStorage};
 use amethyst_core::transform::GlobalTransform;
 use cam::{ActiveCamera, Camera};
@@ -121,7 +121,7 @@ where
             "camera_position",
             camera
                 .as_ref()
-                .map(|&(_, ref trans)| [trans.0[3][0], trans.0[3][1], trans.0[3][2]])
+                .map(|&(_, ref trans)| trans.0.column(3).remove_row(3).into())
                 .unwrap_or([0.0; 3]),
         );
 
@@ -136,7 +136,7 @@ where
             return;
         }
 
-        set_vertex_args(effect, encoder, camera, &GlobalTransform(Matrix4::one()));
+        set_vertex_args(effect, encoder, camera, &GlobalTransform(na::one()));
 
         effect.draw(mesh.slice(), encoder);
         effect.clear();

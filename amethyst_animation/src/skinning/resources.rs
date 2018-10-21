@@ -1,5 +1,5 @@
 use amethyst_assets::{PrefabData, PrefabError};
-use amethyst_core::cgmath::{Matrix4, SquareMatrix};
+use amethyst_core::nalgebra::{Matrix4};
 use amethyst_core::specs::prelude::{Component, DenseVecStorage, Entity, WriteStorage};
 use amethyst_renderer::JointTransformsPrefab;
 use hibitset::BitSet;

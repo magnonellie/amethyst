@@ -24,7 +24,7 @@ extern crate thread_profiler;
 
 use animation::{AnimatablePrefab, SkinnablePrefab};
 use assets::{Handle, Prefab, PrefabData, PrefabLoaderSystem, ProgressCounter};
-use core::cgmath::{Array, EuclideanSpace, Point3, Vector3};
+use core::nalgebra::{Point3, Vector3};
 use core::specs::error::Error;
 use core::specs::prelude::{Component, DenseVecStorage, Entity, WriteStorage};
 use core::transform::Transform;
@@ -68,9 +68,9 @@ impl GltfPrefab {
     /// Move the scene so the center of the bounding box is at the given `target` location.
     pub fn move_to(&mut self, target: Point3<f32>) {
         if let Some(ref extent) = self.extent {
-            self.transform
+            *self.transform
                 .get_or_insert_with(Transform::default)
-                .translation += target - extent.centroid();
+                .translation_mut() += target - extent.centroid();
         }
     }
 
@@ -81,7 +81,7 @@ impl GltfPrefab {
             let max = distance.x.max(distance.y).max(distance.z);
             let scale = max_distance / max;
             self.transform.get_or_insert_with(Transform::default).scale =
-                Vector3::from_value(scale);
+                Vector3::from_element(scale);
         }
     }
 }
@@ -98,8 +98,8 @@ pub struct GltfNodeExtent {
 impl Default for GltfNodeExtent {
     fn default() -> Self {
         Self {
-            start: Point3::from_value(std::f32::MAX),
-            end: Point3::from_value(std::f32::MIN),
+            start: Point3::from_coordinates(Vector3::from_element(std::f32::MAX)),
+            end: Point3::from_coordinates(Vector3::from_element(std::f32::MIN)),
         }
     }
 }
@@ -131,7 +131,7 @@ impl GltfNodeExtent {
 
     /// Returns the centroid of this extent
     pub fn centroid(&self) -> Point3<f32> {
-        (self.start + self.end.to_vec()) / 2.
+        (self.start + self.end.coords) / 2.
     }
 
     /// Returns the 3 dimensional distance between the start and end of this.

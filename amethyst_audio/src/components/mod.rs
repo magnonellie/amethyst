@@ -3,7 +3,7 @@
 pub use self::audio_emitter::AudioEmitter;
 pub use self::audio_listener::AudioListener;
 use amethyst_assets::{PrefabData, PrefabError};
-use amethyst_core::cgmath::Point3;
+use amethyst_core::nalgebra::Vector3;
 use amethyst_core::specs::prelude::{Entity, Read, WriteStorage};
 use output::Output;
 
@@ -17,7 +17,7 @@ mod audio_listener;
 pub struct AudioPrefab {
     emitter: bool,
     /// Left, Right
-    listener: Option<(Point3<f32>, Point3<f32>)>,
+    listener: Option<(Vector3<f32>, Vector3<f32>)>,
 }
 
 impl<'a> PrefabData<'a> for AudioPrefab {

@@ -1,7 +1,7 @@
 use amethyst::{
     assets::Loader,
     core::{
-        cgmath::{Matrix4, Vector3},
+        nalgebra::{Translation, Vector3},
         transform::{GlobalTransform, Transform},
     },
     ecs::prelude::World,
@@ -46,7 +46,7 @@ fn initialise_camera(world: &mut World) {
             arena_height,
             0.0,
         ))).with(GlobalTransform(
-            Matrix4::from_translation(Vector3::new(0.0, 0.0, 1.0)).into(),
+            Translation::from_vector(Vector3::new(0.0, 0.0, 1.0)).to_homogeneous(),
         )).build();
 }
 

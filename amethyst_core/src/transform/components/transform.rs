@@ -1,6 +1,6 @@
 //! Global transform component.
 
-use cgmath::{Matrix4, One};
+use nalgebra::{self as na, Matrix4};
 use specs::prelude::{Component, DenseVecStorage, FlaggedStorage};
 use std::borrow::Borrow;
 
@@ -17,15 +17,7 @@ pub struct GlobalTransform(pub Matrix4<f32>);
 impl GlobalTransform {
     /// Checks whether each `f32` of the `GlobalTransform` is finite (not NaN or inf).
     pub fn is_finite(&self) -> bool {
-        for i in 0..4 {
-            for j in 0..4 {
-                if !self.0[i][j].is_finite() {
-                    return false;
-                }
-            }
-        }
-
-        true
+        !self.0.as_slice().iter().any(|f| !f32::is_finite(*f))
     }
 }
 
@@ -35,7 +27,7 @@ impl Component for GlobalTransform {
 
 impl Default for GlobalTransform {
     fn default() -> Self {
-        GlobalTransform(Matrix4::one())
+        GlobalTransform(na::one())
     }
 }
 

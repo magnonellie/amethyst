@@ -1,7 +1,7 @@
-use amethyst_core::cgmath::num_traits::NumCast;
-use amethyst_core::cgmath::BaseNum;
+use alga::general::Real;
 use amethyst_core::specs::prelude::{Entity, WriteStorage};
 use minterpolate::InterpolationPrimitive;
+use num_traits::cast::{NumCast, ToPrimitive};
 use resources::{AnimationControlSet, AnimationSampling};
 
 /// Get the animation set for an entity. If none exists, one will be added. If entity is invalid,
@@ -30,7 +30,7 @@ where
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum SamplerPrimitive<S>
 where
-    S: BaseNum,
+    S: Real,
 {
     /// A single value
     Scalar(S),
@@ -44,7 +44,7 @@ where
 
 impl<S> From<[S; 2]> for SamplerPrimitive<S>
 where
-    S: BaseNum,
+    S: Real,
 {
     fn from(arr: [S; 2]) -> Self {
         SamplerPrimitive::Vec2(arr)
@@ -53,7 +53,7 @@ where
 
 impl<S> From<[S; 3]> for SamplerPrimitive<S>
 where
-    S: BaseNum,
+    S: Real,
 {
     fn from(arr: [S; 3]) -> Self {
         SamplerPrimitive::Vec3(arr)
@@ -62,7 +62,7 @@ where
 
 impl<S> From<[S; 4]> for SamplerPrimitive<S>
 where
-    S: BaseNum,
+    S: Real,
 {
     fn from(arr: [S; 4]) -> Self {
         SamplerPrimitive::Vec4(arr)
@@ -71,7 +71,7 @@ where
 
 impl<S> InterpolationPrimitive for SamplerPrimitive<S>
 where
-    S: BaseNum,
+    S: Real + ToPrimitive + NumCast,
 {
     fn add(&self, other: &Self) -> Self {
         use self::SamplerPrimitive::*;
@@ -156,7 +156,7 @@ where
 
 fn mul_f32<T>(s: T, scalar: f32) -> T
 where
-    T: BaseNum,
+    T: Real + ToPrimitive + NumCast,
 {
     NumCast::from(s.to_f32().unwrap() * scalar).unwrap()
 }
