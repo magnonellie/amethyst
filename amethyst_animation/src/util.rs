@@ -1,5 +1,7 @@
-use alga::general::Real;
-use amethyst_core::specs::prelude::{Entity, WriteStorage};
+use amethyst_core::{
+    nalgebra::Real,
+    specs::prelude::{Entity, WriteStorage},
+};
 use minterpolate::InterpolationPrimitive;
 use num_traits::cast::{NumCast, ToPrimitive};
 use resources::{AnimationControlSet, AnimationSampling};

@@ -5,8 +5,8 @@ extern crate amethyst;
 use amethyst::{
     assets::Loader,
     core::{
-        cgmath::{Deg, Matrix4},
-        transform::GlobalTransform,
+        nalgebra::{Matrix4, Vector3},
+        Transform, TransformBundle,
     },
     prelude::*,
     renderer::*,
@@ -41,9 +41,6 @@ impl<'a, 'b> SimpleState<'a, 'b> for Example {
             for j in 0..5 {
                 let roughness = 1.0f32 * (i as f32 / 4.0f32);
                 let metallic = 1.0f32 * (j as f32 / 4.0f32);
-                let pos = Matrix4::from_translation(
-                    [2.0f32 * (i - 2) as f32, 2.0f32 * (j - 2) as f32, 0.0].into(),
-                );
 
                 let metallic = [metallic, metallic, metallic, 1.0].into();
                 let roughness = [roughness, roughness, roughness, 1.0].into();
@@ -65,9 +62,12 @@ impl<'a, 'b> SimpleState<'a, 'b> for Example {
                     ..mat_defaults.clone()
                 };
 
+                let mut transform = Transform::default();
+                transform.set_xyz(2.0f32 * (i - 2) as f32, 2.0f32 * (j - 2) as f32, 0.0);
+
                 world
                     .create_entity()
-                    .with(GlobalTransform(pos.into()))
+                    .with(transform)
                     .with(mesh.clone())
                     .with(mtl)
                     .build();
@@ -81,8 +81,8 @@ impl<'a, 'b> SimpleState<'a, 'b> for Example {
             ..PointLight::default()
         }.into();
 
-        let light1_transform =
-            GlobalTransform(Matrix4::from_translation([6.0, 6.0, -6.0].into()).into());
+        let mut light1_transform = Transform::default();
+        light1_transform.set_xyz(6.0, 6.0, -6.0);
 
         let light2: Light = PointLight {
             intensity: 5.0,
@@ -90,8 +90,8 @@ impl<'a, 'b> SimpleState<'a, 'b> for Example {
             ..PointLight::default()
         }.into();
 
-        let light2_transform =
-            GlobalTransform(Matrix4::from_translation([6.0, -6.0, -6.0].into()).into());
+        let mut light2_transform = Transform::default();
+        light2_transform.set_xyz(6.0, -6.0, -6.0);
 
         world
             .create_entity()
@@ -107,12 +107,16 @@ impl<'a, 'b> SimpleState<'a, 'b> for Example {
 
         println!("Put camera");
 
-        let transform =
-            Matrix4::from_translation([0.0, 0.0, -12.0].into()) * Matrix4::from_angle_y(Deg(180.));
+        let mut transform = Transform::default();
+        transform.set_xyz(0.0, 0.0, -12.0);
+        transform.rotate_local(Vector3::y_axis(), std::f32::consts::PI);
+
         world
             .create_entity()
-            .with(Camera::from(Projection::perspective(1.3, Deg(60.0))))
-            .with(GlobalTransform(transform.into()))
+            .with(Camera::from(Projection::perspective(
+                1.3,
+                std::f32::consts::FRAC_PI_3,
+            ))).with(transform)
             .build();
     }
 }
@@ -129,11 +133,9 @@ fn main() -> amethyst::Result<()> {
 
     let resources = format!("{}/examples/assets/", app_root);
 
-    let game_data = GameDataBuilder::default().with_basic_renderer(
-        path,
-        DrawPbm::<PosNormTangTex>::new(),
-        false,
-    )?;
+    let game_data = GameDataBuilder::default()
+        .with_basic_renderer(path, DrawPbm::<PosNormTangTex>::new(), false)?
+        .with_bundle(TransformBundle::new())?;
     let mut game = Application::new(&resources, Example, game_data)?;
     game.run();
     Ok(())

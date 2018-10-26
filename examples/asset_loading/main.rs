@@ -7,7 +7,7 @@ extern crate rayon;
 use amethyst::{
     assets::{Loader, Result as AssetResult, SimpleFormat},
     core::{
-        cgmath::{Array, Deg, Matrix4, Vector3},
+        nalgebra::Vector3,
         transform::{GlobalTransform, Transform, TransformBundle},
     },
     input::InputBundle,
@@ -90,8 +90,8 @@ impl<'a, 'b> SimpleState<'a, 'b> for AssetsExample {
         };
 
         let mut trans = Transform::default();
-        trans.translation = Vector3::new(-5.0, 0.0, 0.0);
-        trans.scale = Vector3::from_value(2.);
+        trans.set_xyz(-5.0, 0.0, 0.0);
+        trans.scale = Vector3::repeat(2.0);
         world
             .create_entity()
             .with(mesh)
@@ -126,12 +126,16 @@ fn main() -> Result<(), Error> {
 }
 
 fn initialise_camera(world: &mut World) {
-    let transform =
-        Matrix4::from_translation([0., -20., 10.].into()) * Matrix4::from_angle_x(Deg(75.96));
+    let mut transform = Transform::default();
+    transform.set_xyz(0.0, -20.0, 10.0);
+    transform.rotate_local(Vector3::x_axis(), 1.3257521);
+
     world
         .create_entity()
-        .with(Camera::from(Projection::perspective(1.0, Deg(60.0))))
-        .with(GlobalTransform(transform.into()))
+        .with(Camera::from(Projection::perspective(
+            1.0,
+            std::f32::consts::FRAC_PI_3,
+        ))).with(transform)
         .build();
 }
 
@@ -144,12 +148,9 @@ fn initialise_lights(world: &mut World) {
         ..Default::default()
     }.into();
 
-    let transform = Matrix4::from_translation([5.0, -20.0, 15.0].into());
+    let mut transform = Transform::default();
+    transform.set_xyz(5.0, -20.0, 15.0);
 
     // Add point light.
-    world
-        .create_entity()
-        .with(light)
-        .with(GlobalTransform(transform.into()))
-        .build();
+    world.create_entity().with(light).with(transform).build();
 }
