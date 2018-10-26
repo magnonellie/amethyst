@@ -1,4 +1,3 @@
-use amethyst_core::nalgebra as na;
 use amethyst_core::specs::prelude::{
     Entities, Entity, Join, Read, ReadStorage, System, WriteStorage,
 };
