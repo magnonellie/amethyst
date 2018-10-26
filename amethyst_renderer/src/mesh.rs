@@ -1,7 +1,7 @@
 //! Mesh resource.
 
 use amethyst_assets::Handle;
-use amethyst_core::nalgebra::{Matrix4, Point3, Unit, Vector3, Translation3, Rotation3};
+use amethyst_core::nalgebra::{Matrix4, Point3, Rotation3, Translation3, Unit, Vector3};
 use error::Result;
 use gfx::Primitive;
 use std::iter::{once, Chain, Once};

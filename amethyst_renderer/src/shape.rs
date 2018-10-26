@@ -1,7 +1,7 @@
 use amethyst_assets::{
     AssetStorage, Handle, Loader, PrefabData, PrefabError, Progress, ProgressCounter,
 };
-use amethyst_core::nalgebra::{Vector3};
+use amethyst_core::nalgebra::Vector3;
 use amethyst_core::specs::prelude::{Entity, Read, ReadExpect, WriteStorage};
 use genmesh::generators::{
     Circle, Cone, Cube, Cylinder, IcoSphere, IndexedPolygon, Plane, SharedVertex, SphereUv, Torus,

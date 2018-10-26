@@ -2,7 +2,7 @@ use amethyst_assets::{
     Asset, AssetStorage, Error, Loader, PrefabData, PrefabError, ProcessingState, Result,
     ResultExt, SimpleFormat,
 };
-use amethyst_core::nalgebra::{Vector3};
+use amethyst_core::nalgebra::Vector3;
 use amethyst_core::specs::prelude::{
     Component, Entity, Read, ReadExpect, VecStorage, WriteStorage,
 };

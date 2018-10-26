@@ -1,8 +1,8 @@
+use amethyst_core::nalgebra as na;
 use amethyst_core::specs::prelude::{
     Entities, Entity, Join, Read, ReadStorage, System, WriteStorage,
 };
 use amethyst_core::transform::GlobalTransform;
-use amethyst_core::nalgebra as na;
 use components::{AudioEmitter, AudioListener};
 use end_signal::EndSignalSource;
 use rodio::SpatialSink;

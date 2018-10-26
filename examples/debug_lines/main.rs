@@ -133,8 +133,10 @@ impl<'a, 'b> SimpleState<'a, 'b> for ExampleState {
         data.world
             .create_entity()
             .with(FlyControlTag)
-            .with(Camera::from(Projection::perspective(1.33333, std::f32::consts::FRAC_PI_2)))
-            .with(GlobalTransform::default())
+            .with(Camera::from(Projection::perspective(
+                1.33333,
+                std::f32::consts::FRAC_PI_2,
+            ))).with(GlobalTransform::default())
             .with(local_transform)
             .build();
     }

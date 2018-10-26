@@ -1,7 +1,7 @@
 //! Debug lines pass
 
 use super::*;
-use amethyst_core::nalgebra::{self as na};
+use amethyst_core::nalgebra as na;
 use amethyst_core::specs::{Join, Read, ReadStorage, Write, WriteStorage};
 use amethyst_core::transform::GlobalTransform;
 use cam::{ActiveCamera, Camera};

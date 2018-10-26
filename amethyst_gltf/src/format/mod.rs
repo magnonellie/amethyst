@@ -6,11 +6,11 @@ use self::material::load_material;
 use self::mesh::load_mesh;
 use self::skin::load_skin;
 use super::*;
-use core::nalgebra::{Unit, Quaternion};
 use animation::AnimationHierarchyPrefab;
 use assets::{
     Error as AssetError, Format, FormatValue, Prefab, Result as AssetResult, ResultExt, Source,
 };
+use core::nalgebra::{Quaternion, Unit};
 use core::transform::Transform;
 use gltf;
 use gltf::Gltf;
