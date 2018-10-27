@@ -4,10 +4,7 @@ extern crate amethyst;
 
 use amethyst::{
     assets::Loader,
-    core::{
-        nalgebra::{Matrix4, Vector3},
-        Transform, TransformBundle,
-    },
+    core::{nalgebra::Vector3, Transform, TransformBundle},
     prelude::*,
     renderer::*,
     utils::application_root_dir,
