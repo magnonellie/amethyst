@@ -397,7 +397,7 @@ impl Default for SerializedTransform {
     fn default() -> Self {
         Self {
             translation: [0.0; 3],
-            rotation: [0.0, 0.0, 0.0, 1.0],
+            rotation: [1.0, 0.0, 0.0, 0.0],
             scale: [1.0; 3]
         }
     }
@@ -408,15 +408,15 @@ impl<'de> Deserialize<'de> for Transform {
     where
         D: Deserializer<'de>,
     {
-        let st: SerializedTransform = Deserialize::deserialize(deserializer)?;
+        let st = SerializedTransform::deserialize(deserializer)?;
 
         let iso = Isometry3::from_parts(
             Translation3::new(st.translation[0], st.translation[1], st.translation[2]),
             Unit::new_normalize(Quaternion::new(
-                st.rotation[3],
                 st.rotation[0],
                 st.rotation[1],
                 st.rotation[2],
+                st.rotation[3],
             ))
         );
         let scale = st.scale.into();
@@ -429,16 +429,15 @@ impl Serialize for Transform {
     where
         S: Serializer,
     {
+        let r = self.iso.rotation.as_ref().coords;
+
         let st = SerializedTransform {
             translation: self.iso.translation.vector.into(),
-            rotation: self.iso.rotation.as_ref().coords.into(),
+            rotation: [r.w, r.x, r.y, r.z],
             scale: self.scale.into(),
         };
 
-        Serialize::serialize(
-            &st,
-            serializer,
-        )
+        st.serialize(serializer)
     }
 }
 
@@ -475,10 +474,10 @@ fn test_transform_serialization() {
         TupleEnd,
         Str("rotation"),
         Tuple { len: 4 },
+        F32(W),
         F32(I),
         F32(J),
         F32(K),
-        F32(W),
         TupleEnd,
         Str("scale"),
         Tuple { len: 3 },
@@ -509,10 +508,10 @@ fn test_transform_serialization() {
         Struct { name: "Transform", len: 3 },
         Str("rotation"),
         Tuple { len: 4 },
+        F32(W),
         F32(I),
         F32(J),
         F32(K),
-        F32(W),
         TupleEnd,
         StructEnd
     ]);
