@@ -33,6 +33,7 @@ thread_profiler = { version = "0.3" , optional = true }
 
 [dev-dependencies]
 amethyst = { path = "..", version = "0.9.0" }
+serde_test = "1"
 
 [features]
 profiler = [ "thread_profiler/thread_profiler" ]
