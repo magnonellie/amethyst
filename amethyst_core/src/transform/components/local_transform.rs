@@ -1,11 +1,9 @@
 //! Local transform component.
-use std::fmt;
-
 use nalgebra::{
     self as na, Isometry3, Matrix4, Quaternion, Translation3, Unit, UnitQuaternion, Vector3,
 };
 use serde::{
-    de::{self, Deserialize, Deserializer, MapAccess, SeqAccess, Visitor},
+    de::{Deserialize, Deserializer},
     ser::{Serialize, Serializer},
 };
 use specs::prelude::{Component, DenseVecStorage, FlaggedStorage};
@@ -386,109 +384,43 @@ impl From<Vector3<f32>> for Transform {
     }
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+#[serde(rename = "Transform")]
+#[serde(default)]
+struct SerializedTransform {
+    translation: [f32; 3],
+    rotation: [f32; 4],
+    scale: [f32; 3],
+}
+
+impl Default for SerializedTransform {
+    fn default() -> Self {
+        Self {
+            translation: [0.0; 3],
+            rotation: [1.0, 0.0, 0.0, 0.0],
+            scale: [1.0; 3]
+        }
+    }
+}
+
 impl<'de> Deserialize<'de> for Transform {
     fn deserialize<D>(deserializer: D) -> Result<Transform, D::Error>
     where
         D: Deserializer<'de>,
     {
-        #[derive(Deserialize)]
-        #[serde(field_identifier, rename_all = "lowercase")]
-        enum Field {
-            Translation,
-            Rotation,
-            Scale,
-        };
+        let st = SerializedTransform::deserialize(deserializer)?;
 
-        struct TransformVisitor;
-
-        impl<'de> Visitor<'de> for TransformVisitor {
-            type Value = Transform;
-
-            fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-                formatter.write_str("struct Transform")
-            }
-
-            fn visit_seq<V>(self, mut seq: V) -> Result<Self::Value, V::Error>
-            where
-                V: SeqAccess<'de>,
-            {
-                let translation: [f32; 3] = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(0, &self))?;
-                let rotation: [f32; 4] = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(1, &self))?;
-                let scale: [f32; 3] = seq
-                    .next_element()?
-                    .ok_or_else(|| de::Error::invalid_length(2, &self))?;
-
-                let iso = Isometry3::from_parts(
-                    Translation3::new(translation[0], translation[1], translation[2]),
-                    Unit::new_normalize(Quaternion::new(
-                        rotation[0],
-                        rotation[1],
-                        rotation[2],
-                        rotation[3],
-                    )),
-                );
-                let scale = scale.into();
-
-                Ok(Transform { iso, scale })
-            }
-
-            fn visit_map<V>(self, mut map: V) -> Result<Self::Value, V::Error>
-            where
-                V: MapAccess<'de>,
-            {
-                let mut translation = None;
-                let mut rotation = None;
-                let mut scale = None;
-
-                while let Some(key) = map.next_key()? {
-                    match key {
-                        Field::Translation => {
-                            if translation.is_some() {
-                                return Err(de::Error::duplicate_field("translation"));
-                            }
-                            translation = Some(map.next_value()?);
-                        }
-                        Field::Rotation => {
-                            if rotation.is_some() {
-                                return Err(de::Error::duplicate_field("rotation"));
-                            }
-                            rotation = Some(map.next_value()?);
-                        }
-                        Field::Scale => {
-                            if scale.is_some() {
-                                return Err(de::Error::duplicate_field("scale"));
-                            }
-                            scale = Some(map.next_value()?);
-                        }
-                    }
-                }
-                let translation: [f32; 3] = translation.unwrap_or([0.0; 3]);
-                let rotation: [f32; 4] = rotation.unwrap_or([1.0, 0.0, 0.0, 0.0]);
-                let scale: [f32; 3] = scale.unwrap_or([1.0; 3]);
-
-                let iso = Isometry3::from_parts(
-                    Translation3::new(translation[0], translation[1], translation[2]),
-                    Unit::new_normalize(Quaternion::new(
-                        rotation[0],
-                        rotation[1],
-                        rotation[2],
-                        rotation[3],
-                    )),
-                );
-                let scale = scale.into();
-
-                eprintln!("iso, scale = {:?} {:?}", iso, scale);
-
-                Ok(Transform { iso, scale })
-            }
-        }
-
-        const FIELDS: &'static [&'static str] = &["translation", "rotation", "scale"];
-        deserializer.deserialize_struct("Transform", FIELDS, TransformVisitor)
+        let iso = Isometry3::from_parts(
+            Translation3::new(st.translation[0], st.translation[1], st.translation[2]),
+            Unit::new_normalize(Quaternion::new(
+                st.rotation[0],
+                st.rotation[1],
+                st.rotation[2],
+                st.rotation[3],
+            ))
+        );
+        let scale = st.scale.into();
+        Ok(Transform { iso, scale })
     }
 }
 
@@ -497,20 +429,103 @@ impl Serialize for Transform {
     where
         S: Serializer,
     {
-        #[derive(Serialize)]
-        struct TransformValues {
-            translation: [f32; 3],
-            rotation: [f32; 4],
-            scale: [f32; 3],
-        }
+        let r = self.iso.rotation.as_ref().coords;
 
-        Serialize::serialize(
-            &TransformValues {
-                translation: self.iso.translation.vector.into(),
-                rotation: self.iso.rotation.as_ref().coords.into(),
-                scale: self.scale.into(),
-            },
-            serializer,
-        )
+        let st = SerializedTransform {
+            translation: self.iso.translation.vector.into(),
+            rotation: [r.w, r.x, r.y, r.z],
+            scale: self.scale.into(),
+        };
+
+        st.serialize(serializer)
     }
+}
+
+#[cfg(test)]
+use serde_test::{assert_tokens, assert_de_tokens, Token::*};
+
+#[test]
+fn test_transform_serialization() {
+    const X: f32 = 20.1;
+    const Y: f32 = 21.2;
+    const Z: f32 = 22.3;
+    const W: f32 = 0.43274233;
+    const I: f32 = 0.47601658;
+    const J: f32 = 0.5192908;
+    const K: f32 = 0.562565;
+    const S: f32 = 10.9;
+    const T: f32 = 11.8;
+    const U: f32 = 12.7;
+    let t1 = Transform {
+        iso: Isometry3::from_parts(
+            Translation3::new(X, Y, Z),
+            Unit::new_unchecked(Quaternion::new(W, I, J, K))
+        ),
+        scale: Vector3::new(S, T, U)
+    };
+
+    assert_tokens(&t1, &[
+        Struct { name: "Transform", len: 3 },
+        Str("translation"),
+        Tuple { len: 3 },
+        F32(X),
+        F32(Y),
+        F32(Z),
+        TupleEnd,
+        Str("rotation"),
+        Tuple { len: 4 },
+        F32(W),
+        F32(I),
+        F32(J),
+        F32(K),
+        TupleEnd,
+        Str("scale"),
+        Tuple { len: 3 },
+        F32(S),
+        F32(T),
+        F32(U),
+        TupleEnd,
+        StructEnd
+    ]);
+
+    // make sure that defaults are picked up!~
+    let mut t2 = Transform::default();
+    t2.set_x(X).set_y(Y).set_z(Z);
+    assert_de_tokens(&t2, &[
+        Struct { name: "Transform", len: 3 },
+        Str("translation"),
+        Tuple { len: 3 },
+        F32(X),
+        F32(Y),
+        F32(Z),
+        TupleEnd,
+        StructEnd
+    ]);
+
+    t2 = Transform::default();
+    t2.set_rotation(Unit::new_unchecked(Quaternion::new(W, I, J, K)));
+    assert_de_tokens(&t2, &[
+        Struct { name: "Transform", len: 3 },
+        Str("rotation"),
+        Tuple { len: 4 },
+        F32(W),
+        F32(I),
+        F32(J),
+        F32(K),
+        TupleEnd,
+        StructEnd
+    ]);
+
+    t2 = Transform::default();
+    t2.set_scale(S, T, U);
+    assert_de_tokens(&t2, &[
+        Struct { name: "Transform", len: 3 },
+        Str("scale"),
+        Tuple { len: 3 },
+        F32(S),
+        F32(T),
+        F32(U),
+        TupleEnd,
+        StructEnd
+    ]);
 }
